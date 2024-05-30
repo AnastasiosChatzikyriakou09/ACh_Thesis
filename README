@@ -1,0 +1,73 @@
+# Experiments on the HPC
+
+## Preliminary Steps
+
+To conduct the following experiments, you must use the High Performance Computing (HPC) system.
+
+1. Change the path containing my username in the code.
+2. In the `Dummy` directory, run the following command in the terminal:
+
+    ```sh
+    grep -rn achatz13 . 
+    ```
+
+3. This command will list all instances of my username (`achatz13`) under the current directory and its sub-directories. Go to each instance and change `achatz13` to your username.
+
+## Running the Experiment
+
+1. Navigate to the path: `Dummy/GA_SRRIP-main/GeST/src`
+2. Execute the following command:
+
+    ```sh
+    python3 __init__.py /home/achatz13/Dummy/GA_SRRIP-main/GeST/configurationFiles/configuration_RRIP.xml
+    ```
+
+   Note: Replace `achatz13` with your username in the configuration file path.
+
+3. Run the Experiment in the Background (Optional):
+   - It is recommended to use the `tmux` tool to run the experiment in the background. `tmux` allows you to manage multiple terminal sessions and keep processes running even when you disconnect from the HPC.
+   - For more information and documentation on `tmux`, you can refer to the [tmux GitHub repository](https://github.com/tmux/tmux/wiki).
+
+
+## Analyzing the Data
+
+After completing your experiments, analyze the data using the scripts located in the `analysis` directory. These scripts are designed to work together, so modifying one might require changes in others as well.
+
+### Step 1: Extract Cache Data
+
+1. Under the directory `/home/achatz13/Dummy/SADRRIP` (on the HPC) locate the script `extract-cache-data.py`.
+2. Execute the script:
+
+    ```sh
+    python3 extract-cache-data.py
+    ```
+
+   This script will generate a file named `cache-data_genNum-indNum-PARTX.txt` under each subdirectory of the `Results` directory. The `genNum`, `indNum`, and `X (PARTX)` are extracted from the subdirectory name. 
+   The file `cache-data_G-I-PARTX.txt` contains cache data for all benchmarks of the corresponding subdirectory (individual). Download the data for the individuals of interest from the HPC.
+
+### Step 2: Convert Cache Data to CSV
+
+1. Place the `.txt` files from Step 1 in a directory along with the script `cache_data_to_csv_converter.py`.
+2. Execute the script:
+
+    ```sh
+    python3 cache_data_to_csv_converter.py
+    ```
+
+   This script converts the `.txt` files to `.csv` files for easier analysis.
+
+### Step 3: Calculate Speedups
+
+1. Ensure you have the file `cache-data_0-0.txt` containing the baseline LRU data. This file must end with `0-0`.
+2. Execute the script `speedups.py` in the same directory as 2.:
+
+    ```sh
+    python3 speedups.py
+    ```
+
+   This will generate the file `speedups.csv`, containing speedup data for each benchmark across all individuals (`.txt` files) and computing the average speedup of each individual. 
+   The individuals in `speedups.csv` will be sorted from highest to lowest average speedup.
+
+### Step 4: Generate Plots
+
+1. Use the generated `.csv` files to create any required plots or use the provided script for automatic plot generation.
